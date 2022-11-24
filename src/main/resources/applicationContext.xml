@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       <bean id="book" class="com.atguigu.pojo.Book">
+           <constructor-arg name="bookName" value="三国演义"/>
+           <constructor-arg name="bookPrice" value="36.9"/>
+           <constructor-arg name="bookPage" value="296"/>
+           <constructor-arg name="thickNess" value="6.3"/>
+       </bean>
+       <bean id="tool" class="com.atguigu.pojo.Tool">
+           <constructor-arg name="toolName" value="白雪公主"/>
+           <constructor-arg name="toolPrice" value="23.6"/>
+       </bean>
+<!--    <bean id="book01" class="com.atguigu.pojo.Book">-->
+<!--        <constructor-arg name="bookName" value="水浒传"/>-->
+<!--        <constructor-arg name="bookPrice" value="36.9"/>-->
+<!--        <constructor-arg name="bookPage" value="296"/>-->
+<!--        <constructor-arg name="thickNess" value="6.3"/>-->
+<!--    </bean>-->
+<!--        <bean id="tool01" class="com.atguigu.pojo.Tool">-->
+<!--            <constructor-arg name="toolName" value="白雪公主01"/>-->
+<!--            <constructor-arg name="toolPrice" value="23.62"/>-->
+<!--        </bean>-->
+
+       <!--autowire: byName(通过名称)|byType(通过类型)|constructor(通过构造器)-->
+       <bean id="children" class="com.atguigu.pojo.Children" autowire="byType">
+
+       </bean>
+
+       <bean id="animal" class="com.atguigu.pojo.Animals">
+           <property name="animalName" value="#{tool.toolName}"/>
+           <property name="number" value="#{2*3}"/>
+           <!--调用静态方法-->
+           <property name="variety" value="#{T(java.util.UUID).randomUUID().toString().replace('-','')}"/>
+           <!--调用非静态方法-->
+           <property name="weight" value="#{book.getBookPrice()}"/>
+       </bean>
+</beans>

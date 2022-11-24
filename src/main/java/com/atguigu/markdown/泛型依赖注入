@@ -1,0 +1,94 @@
+原始的依赖注入:
+
+public abstract class BaseDao<T> {
+    public abstract void save();
+}
+
+@Repository
+public class BookDao extends BaseDao<Book>{
+    @Override
+    public void save() {
+        System.out.println("保存图书信息 BookDao被调用");
+    }
+}
+
+@Repository
+public class StudentDao extends BaseDao<Student>{
+
+    @Override
+    public void save() {
+        System.out.println("保存用户信息 StudentDao被调用");
+    }
+}
+
+@Service
+public class BookService {
+    @Autowired
+    private BookDao bookdao;
+    public void saveBook(){
+        bookdao.save();
+    }
+}
+
+@Service
+public class StudentService {
+    @Autowired
+    private StudentDao studentDao;
+    public void saveStudent(){
+        studentDao.save();
+    }
+}
+
+@ContextConfiguration(locations = "classpath:application02.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
+public class SpringJunit4Test {
+    @Autowired
+    private BookService bookService;
+    @Autowired
+    private StudentService studentService;
+    @Test
+    public void save(){
+        bookService.saveBook();
+        studentService.saveStudent();
+    }
+}
+
+通过泛型做依赖注入:
+
+@Service
+public class BookService extends BaseService<Book>{
+
+}
+
+@Service
+public class StudentService extends BaseService<Student>{
+
+}
+
+public class BaseService<T> {
+    @Autowired
+    private BaseDao<T> baseDao;
+    public void save(){
+        baseDao.save();
+    }
+}
+通过泛型决定注入具体调用的那个Dao
+@ContextConfiguration(locations = "classpath:application02.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
+public class SpringJunit4Test {
+    @Autowired
+    private BaseService<Student> baseService;
+    @Test
+    public void save(){
+        baseService.save();
+        System.out.println(baseService.getClass().getSuperclass());
+        //得到带泛型的类的类型名称
+        System.out.println(baseService.getClass().getGenericSuperclass());
+    }
+}
+
+测试结果:
+保存用户信息 StudentDao被调用
+class com.itheima.service.BaseService
+发现带泛型的类的类型为:而Spring正是参考了泛型进行Bean的注入。
+com.itheima.service.BaseService<com.atguigu.pojo.Student>

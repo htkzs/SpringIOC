@@ -1,0 +1,5 @@
+SpringIOC是一个帮助我们管理Bean的容器
+
+要让IOC帮助我们创建Bean，首先需要将Bean纳入IOC管理
+
+控制反转：原来程序员主动创建Bean的过程，转换为被动从IOC中获取Bean的过程。

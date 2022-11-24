@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       <!--关于Bean的作用域 Spring5 之前Bean的作用域分别为：
+       singleton：创建单实例的，默认的
+       1.在容器启动之前就已经创建好bean对象，保存在容器中
+       2.任何获取都是获取之前创建好的bean
+
+       prototype： 多实例的
+       1.容器启动默认不会创建多实例的bean
+       2.获取的时候创建bean
+       3.每次获取都会创建一个新的Bean
+
+       request: 在web程序中，同一次请求创建一个Bean实例
+       session：在web环境中同一次会话创建一个Bean实例
+       -->
+
+       <bean class="com.atguigu.pojo.Student" id="student01" scope="prototype">
+           <constructor-arg name="stuNo" value="1234"/>
+           <constructor-arg name="stuName" value="zhangsan"/>
+           <constructor-arg name="stuAge" value="23"/>
+           <constructor-arg name="stuGender" value="男"/>
+       </bean>
+       <!--spring默认通过反射帮助我们创建Bean-->
+       <!--借助静态工厂创建实例
+       1.注意静态工程自己本身不需要创建实例
+       -->
+       <bean id="animal" class="com.atguigu.factory.AnimalsStaticFactory"
+             factory-method="getAnimalsInstance">
+           <constructor-arg name="name" value="小花"/>
+
+       </bean>
+
+       <!--借助实例工厂常见bean
+       1.首先需要创建实例工厂，然后再指定实例工厂和工厂方法-->
+       <bean id="BeanFactory" class="com.atguigu.factory.AnimalsInstanceFactory"/>
+       <bean id="animal01" class="com.atguigu.pojo.Animals" factory-bean="BeanFactory" factory-method="getAnimalsInstance">
+           <!--工厂方法需要传递一个参数-->
+           <constructor-arg name="name" value="小黑"/>
+       </bean>
+
+       <!--通过Spring的FactoryBean创建Bean-->
+       <bean id="MyFactoryBean" class="com.atguigu.factory.MyFactoryBean"/>
+
+
+</beans>

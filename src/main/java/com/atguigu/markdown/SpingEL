@@ -1,0 +1,10 @@
+  可以使用SpringEL获取其它Bean的属性值，可以字面量计算，引用其它Bean，调用静态方法，调用非静态方法等操作
+
+       <bean id="animal" class="com.atguigu.pojo.Animals">
+           <property name="animalName" value="#{tool.toolName}"/>
+           <property name="number" value="#{2*3}"/>
+           <!--调用静态方法-->
+           <property name="variety" value="#{T(java.util.UUID).randomUUID().toString().replace('-','')}"/>
+           <!--调用非静态方法-->
+           <property name="weight" value="#{book.getBookPrice()}"/>
+       </bean>

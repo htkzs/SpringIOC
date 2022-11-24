@@ -1,0 +1,125 @@
+使用原生的java导包方式一定要注意导入Aop依赖注解才可以起作用
+
+1.给Controller Service Dao层增减 @Controller @Service @Repository @Component等注解，
+其中@Controller @Service @Repository只能在 model view controller 的三层组件中起作用 @Component可以使用在仍以的Class上
+2.配置扫描包 <context:component-scan base-package="com.atguigu.controller"/>
+即可快速将Bean纳入SpringIOC管理
+
+spring莫认将类名得首字母小写作为Bean的唯一标识放入单例池
+@Controller
+@Scope(value = "prototype") //指定作用域
+public class BookController {
+}
+
+@Service
+public class BookService {
+}
+
+@Repository
+public class BookDao {
+}
+
+注解扫描
+在扫描包的时候，我们指明 排除扫描到的@Controller注解
+       <context:component-scan base-package="com.atguigu">
+            <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+       </context:component-scan>
+在扫描包的时候指定排除 某个类不纳入IOC管理
+        <context:component-scan base-package="com.atguigu.controller">
+                   <context:exclude-filter type="assignable" expression="com.atguigu.controller.BookController"/>
+        </context:component-scan>
+
+在扫描要包含那些类 由于莫认是扫描全部 所以要将默认的过滤器禁掉。
+        <context:component-scan base-package="com.atguigu.controller" use-default-filters="false">
+             <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        </context:component-scan>
+        <context:component-scan base-package="com.atguigu.controller" use-default-filters="false">
+             <context:include-filter type="assignable" expression="com.atguigu.controller.BookController"/>
+        </context:component-scan>
+
+
+@Autowired 自动注入,Spring会自动给依赖的属性赋值，前提是，相互依赖的Bean必须被SpringIOC管理
+
+1.首先按照类型去IOC中去查找 找到:直接赋值 没找到:会报异常 NoSuchBean 找到多个之后会按照名称查找(变量名称作为id去装配)
+
+例子:
+@Service
+public class BookService {
+    @Autowired
+    private BookDao bookDao;
+
+    public void saveBook(){
+        bookDao.save();
+    }
+}
+
+@Service
+public class BookServiceExt extends BookService{
+    @Autowired
+    private BookDao bookDao;
+    @Override
+    public void saveBook(){
+        bookDao.save();
+    }
+
+}
+
+public class BookController {
+    @Autowired
+    private BookService bookService;
+    public void saveBook(){
+        bookService.saveBook();
+    }
+}
+此时通过@Autowired注解进行注入，首先根据类型在IOC容器中中找到两个Bean bookService和bookServiceExt，
+然后根据属性名称（bookService）查找到唯一的Bean，这样就成功注入一个唯一Bean。
+
+如果根据类型和变量名称都没匹配上就会报错。
+
+@Qualifier("bookService") 指定新id和Bean的id做匹配，而不是使用变量名匹配。
+
+@Autowired(required = false) 找不到会自动装配null
+
+@Autowired标注在普通方法上,通过普通方法注入
+public class BookController {
+     private BookService bookService;
+    /**
+     * 加入了@Autowired注解的方法会在Bean创建的时候自动运行
+     * 这个方法上的每个参数都会自动注入值
+     * @param bookService
+     */
+    @Autowired
+    public void getBookService(BookService bookService){
+        this.bookService = bookService;
+        System.out.println(bookService);
+    }
+    public void saveBook(){
+        bookService.saveBook();
+    }
+}
+@Autowired标注在set方法上，通过set方法注入
+
+public class BookController {
+    private BookService bookService;
+    @Autowired
+    public void setBookService(BookService bookService) {
+         this.bookService = bookService;
+    }
+    public void saveBook(){
+        bookService.saveBook();
+    }
+}
+如果根据类型找到两个BookService,又会根据名字bookService01在IOC中找，发现没有将报错
+这时候就可以使用@Qualifier指定别名为bean的标识Id
+在方法参数上标注@Qualifier
+    @Autowired
+    public void getBookService(@Qualifier("bookServiceExt") BookService bookService01) {
+        this.bookService = bookService01;
+        System.out.println(bookService);
+    }
+
+
+@Resource(JDK)和@Autowired(Spring)
+@Resource扩展性强 如果切换成另外一个框架@Resource可以使用，而@Autowired就不可以使用。
+
+

@@ -1,0 +1,25 @@
+1.首先导入依赖报spring-test
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-test</artifactId>
+               <version>5.2.5.RELEASE</version>
+           </dependency>
+2.标注配置文件的位置
+     @ContextConfiguration(locations = "classpath:application01.xml")
+3.指定使用Spring的单元测试进行测试
+     @RunWith(SpringJUnit4ClassRunner.class)
+
+@ContextConfiguration(locations = "classpath:application01.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
+public class SpringJunit4Test {
+    @Autowired
+    private BookController bookController;
+    @Test
+    public void saveBook(){
+        bookController.saveBook();
+    }
+}
+
+直接给属性注入值不在需要通过
+ ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application01.xml");
+ 获取IOC容器。
